@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace TestApp.Models;
 
-public sealed partial class MessagePipelineBehavior<TRequest, TResult>(ILogger<MessagePipelineBehavior<TRequest, TResult>> logger)
+public partial class MessagePipelineBehavior<TRequest, TResult>(ILogger<MessagePipelineBehavior<TRequest, TResult>> logger)
     : MessagePipelineBehavior, IPipelineBehavior<TRequest, TResult>
     where TRequest : Command<TResult>
 {
