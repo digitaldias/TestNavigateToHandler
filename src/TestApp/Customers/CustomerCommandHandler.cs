@@ -4,7 +4,7 @@ using TestApp.Models;
 
 namespace TestApp.Customers;
 
-public class CreateCustomerHandler(ILogger<CreateCustomer> logger) : IRequestHandler<CreateCustomer, Result<Customer>>
+public sealed class CreateCustomerHandler(ILogger<CreateCustomer> logger) : IRequestHandler<CreateCustomer, Result<Customer>>
 {
     private readonly ILogger<CreateCustomer> _logger = logger;
 

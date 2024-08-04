@@ -4,7 +4,7 @@ using TestApp.Models;
 
 namespace TestApp.Boats;
 
-public partial class CreateBoatHandler(ILogger<CreateBoatHandler> logger, IMediator mediator) : IRequestHandler<CreateBoat, Result<Boat>>
+public sealed partial class CreateBoatHandler(ILogger<CreateBoatHandler> logger, IMediator mediator) : IRequestHandler<CreateBoat, Result<Boat>>
 {
     private readonly IMediator _mediator = mediator;
 

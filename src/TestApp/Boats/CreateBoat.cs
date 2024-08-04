@@ -2,4 +2,4 @@
 
 namespace TestApp.Boats;
 
-public record CreateBoat(string BoatName) : Command<Result<Boat>>;
+public sealed record CreateBoat(string BoatName) : Command<Result<Boat>>;

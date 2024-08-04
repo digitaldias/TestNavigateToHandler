@@ -2,4 +2,4 @@
 
 namespace TestApp.Orders;
 
-public record CreateOrder(Guid OrderId, Guid CustomerId) : Command<Result<Order>>;
+public sealed record CreateOrder(Guid OrderId, Guid CustomerId) : Command<Result<Order>>;

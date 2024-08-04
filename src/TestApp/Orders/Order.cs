@@ -2,7 +2,7 @@
 
 namespace TestApp.Orders;
 
-public record Order(Guid OrderId, Guid CustomerId) : IAmEntity
+public sealed record Order(Guid OrderId, Guid CustomerId) : IAmEntity
 {
     public DateTime Created { get; init; } = DateTime.UtcNow;
 }

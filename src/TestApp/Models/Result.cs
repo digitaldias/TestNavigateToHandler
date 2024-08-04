@@ -6,19 +6,19 @@ public class Result
 
     public bool IsFailure => !IsSuccess;
 
-    public Problem? Problem { get; internal set; }
+    public Problem? Problem { get; }
 
     public Result()
     {
     }
 
-    public Result(Problem problem)
+    public Result(Problem? problem = null)
     {
-        Problem = problem ?? throw new ArgumentNullException(nameof(problem));
+        Problem = problem;
     }
 }
 
-public class Result<TValue> : Result
+public sealed class Result<TValue> : Result
 {
     private readonly TValue? _value;
 
@@ -27,13 +27,9 @@ public class Result<TValue> : Result
     {
     }
 
-    public Result(TValue? value, string? errorMessage = null)
+    public Result(TValue? value)
     {
         _value = value;
-        if (value is null)
-        {
-            base.Problem = new(errorMessage ?? "Value cannot be null");
-        }
     }
 
     public TValue Value => _value ?? default!;

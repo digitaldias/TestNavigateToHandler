@@ -4,7 +4,7 @@ using TestApp.Models;
 
 namespace TestApp.Orders;
 
-public class CreateCommandHandler(ILogger<CreateCommandHandler> logger) : IRequestHandler<CreateOrder, Result<Order>>
+public sealed class CreateCommandHandler(ILogger<CreateCommandHandler> logger) : IRequestHandler<CreateOrder, Result<Order>>
 {
     private readonly ILogger<CreateCommandHandler> _logger = logger;
 

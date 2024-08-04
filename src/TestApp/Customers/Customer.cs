@@ -2,7 +2,7 @@
 
 namespace TestApp.Customers;
 
-public record Customer(string CustomerName) : IAmEntity
+public sealed record Customer(string CustomerName) : IAmEntity
 {
     public DateTime Created { get; init; } = DateTime.UtcNow;
 }

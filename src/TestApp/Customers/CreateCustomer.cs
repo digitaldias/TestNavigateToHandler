@@ -2,7 +2,7 @@
 
 namespace TestApp.Customers;
 
-public record CreateCustomer(string customerName) : Command<Result<Customer>>
+public sealed record CreateCustomer(string customerName) : Command<Result<Customer>>
 {
     public string CustomerName { get; } = customerName;
 }
