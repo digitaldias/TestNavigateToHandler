@@ -4,9 +4,9 @@ using TestApp.Models;
 
 namespace TestApp.Orders;
 
-public sealed class CreateCommandHandler(ILogger<CreateCommandHandler> logger) : IRequestHandler<CreateOrder, Result<Order>>
+public sealed class CreateOrderHandler(ILogger<CreateOrderHandler> logger) : IRequestHandler<CreateOrder, Result<Order>>
 {
-    private readonly ILogger<CreateCommandHandler> _logger = logger;
+    private readonly ILogger<CreateOrderHandler> _logger = logger;
 
     public ValueTask<Result<Order>> Handle(CreateOrder request, CancellationToken cancellationToken)
     {
