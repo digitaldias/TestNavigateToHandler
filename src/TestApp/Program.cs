@@ -5,6 +5,7 @@ using Mediator;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
+using Serilog.Sinks.SystemConsole.Themes;
 using TestApp.Models;
 using TestApp.Services;
 
@@ -23,13 +24,12 @@ internal class Program
             .UseLamar()
             .ConfigureServices((hostContext, services) =>
             {
-                services.AddMediator(conf =>
+                services.AddMediator(cfg =>
                 {
-                    conf.ServiceLifetime = ServiceLifetime.Transient;
-                    conf.Namespace = "TestApp";
+                    cfg.ServiceLifetime = ServiceLifetime.Transient;
+                    cfg.Namespace = "TestApp";
                 });
-                services.AddLamar([]);
-                services.AddSingleton<TestAppRunner>();
+                services.AddLamar();
             })
             .ConfigureContainer<ServiceRegistry>(services =>
             {
@@ -37,18 +37,19 @@ internal class Program
                 {
                     scan.AssembliesAndExecutablesFromApplicationBaseDirectory();
                     scan.WithDefaultConventions();
-                    scan.AddAllTypesOf(typeof(Command<>));
-                    scan.AddAllTypesOf(typeof(IRequestHandler<,>));
                     services.AddSingleton(typeof(IPipelineBehavior<,>), typeof(MessagePipelineBehavior<,>));
                 });
+                services.Use<TestAppRunner>().Transient();
             })
             .UseSerilog((hostContext, loggerConfiguration) =>
             {
+                // Switch to Debug() to see more information
+                loggerConfiguration.MinimumLevel.Information();
+
                 loggerConfiguration
-                    .MinimumLevel.Information()
                     .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Warning)
                     .Enrich.FromLogContext()
-                    .WriteTo.Console()
+                    .WriteTo.Async(cfg => cfg.Console(theme: AnsiConsoleTheme.Code))
                     .Filter.ByExcluding(logEvent =>
                         logEvent.Properties.TryGetValue("SourceContext", out var source) &&
                         source.ToString().StartsWith("\"Microsoft\"") &&
