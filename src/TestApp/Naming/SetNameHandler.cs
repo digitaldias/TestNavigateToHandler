@@ -9,8 +9,8 @@ public class SetNameHandler : IRequestHandler<SetName, string>
     {
         var SomeOddity = new
         {
+            request.Name,
             Id = Guid.NewGuid(),
-            Name = request.Name,
             Created = DateTime.UtcNow
         };
         var writer = new DiskWriter();
