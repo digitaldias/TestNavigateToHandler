@@ -10,12 +10,12 @@ namespace TestApp.Services;
 
 public sealed class TestAppRunner(IMediator mediator, ILogger<TestAppRunner> logger)
 {
-    private static readonly Random _random = new Random((int)DateTime.Now.Ticks);
+    private static readonly Random _random = new((int)DateTime.Now.Ticks);
 
     private readonly IMediator _mediator = mediator;
     private readonly ILogger<TestAppRunner> _logger = logger;
 
-    public async Task Run(string[] args)
+    public async Task Run()
     {
         var commands = new List<Models.ICommand>();
 
@@ -27,31 +27,40 @@ public sealed class TestAppRunner(IMediator mediator, ILogger<TestAppRunner> log
         Shuffle(commands);
         var tasks = commands.Select(SendMessageAsync).ToList();
 
-        var results = await Task.WhenAll(tasks);
-
-        var averageExecutionTimes = results
-            .GroupBy(result => result.Key)
-            .Select(group => new
-            {
-                CommandType = group.Key,
-                InvocationCount = group.Count(),
-                AverageExecutionTime = group.Average(result => result.Value.time),
-                PercentageFailed = ((double)group.Count(result => result.Value.succeeded == false) / group.Count()) * 100
-            });
-
-        _logger.LogInformation(new string('-', 80));
-
-        foreach (var avg in averageExecutionTimes)
+        try
         {
-            _logger.LogInformation("{CommandType} executed {InvocationCount} times with avg: {AverageExecutionTime:0.000}ms. Percentage failed: {PercentageFailed:0.00}%",
-                avg.CommandType,
-                avg.InvocationCount,
-                avg.AverageExecutionTime,
-                avg.PercentageFailed);
-        }
-        _logger.LogInformation(new string('-', 80));
+            _logger.LogInformation("Awaiting execution of {CommandCount} tasks...", tasks.Count);
+            var results = await Task.WhenAll(tasks);
 
-        _logger.LogInformation("Average execution time overall: {AverageExecutionTime:0.000}ms", MessagePipelineBehavior.AverageExecutionTime);
+            var averageExecutionTimes = results
+                .GroupBy(result => result.Key)
+                .Select(group => new
+                {
+                    CommandType = group.Key,
+                    InvocationCount = group.Count(),
+                    AverageExecutionTime = group.Average(result => result.Value.time),
+                    PercentageFailed = ((double)group.Count(result => result.Value.succeeded == false) / group.Count()) * 100
+                });
+
+            _logger.LogInformation("{Divider}", new string('-', 80));
+
+            foreach (var avg in averageExecutionTimes)
+            {
+                _logger.LogInformation("{CommandType} executed {InvocationCount} times with avg: {AverageExecutionTime:0.000}ms. Percentage failed: {PercentageFailed:0.00}%",
+                    avg.CommandType,
+                    avg.InvocationCount,
+                    avg.AverageExecutionTime,
+                    avg.PercentageFailed);
+            }
+
+            _logger.LogInformation("{Divider}", new string('-', 80));
+
+            _logger.LogInformation("Average execution time overall: {AverageExecutionTime:0.000}ms", MessagePipelineBehavior.AverageExecutionTime);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while awaiting tasks.");
+        }
     }
 
     private async Task<KeyValuePair<string, (double time, bool succeeded)>> SendMessageAsync(Models.ICommand command)
@@ -77,9 +86,7 @@ public sealed class TestAppRunner(IMediator mediator, ILogger<TestAppRunner> log
         for (int i = n - 1; i > 0; i--)
         {
             int j = _random.Next(i + 1);
-            T temp = list[i];
-            list[i] = list[j];
-            list[j] = temp;
+            (list[j], list[i]) = (list[i], list[j]);
         }
     }
 }

@@ -13,10 +13,12 @@ internal class Program
 {
     private static async Task Main(string[] args)
     {
-        await CreateHostBuilder(args)
-            .Build()
-            .Services.GetRequiredService<TestAppRunner>()
-            .Run(args);
+        var host = CreateHostBuilder(args).Build();
+
+        var appRunner = host.Services.GetRequiredService<TestAppRunner>();
+        await appRunner.Run();
+
+        Log.CloseAndFlush();
     }
 
     public static IHostBuilder CreateHostBuilder(string[] args) =>
@@ -44,15 +46,13 @@ internal class Program
             .UseSerilog((hostContext, loggerConfiguration) =>
             {
                 // Switch to Debug() to see more information
-                loggerConfiguration.MinimumLevel.Information();
 
                 loggerConfiguration
+                    .MinimumLevel.Information()
                     .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Warning)
                     .Enrich.FromLogContext()
-                    .WriteTo.Async(cfg => cfg.Console(theme: AnsiConsoleTheme.Code))
-                    .Filter.ByExcluding(logEvent =>
-                        logEvent.Properties.TryGetValue("SourceContext", out var source) &&
-                        source.ToString().StartsWith("\"Microsoft\"") &&
-                        logEvent.Level < Serilog.Events.LogEventLevel.Warning);
+                    .WriteTo.Async(cfg => cfg.Console(theme: AnsiConsoleTheme.Code, applyThemeToRedirectedOutput: true))
+                    .Enrich.FromLogContext()
+                    .Filter.ByExcluding(logEvent => logEvent.Properties.TryGetValue("SourceContext", out var source) && source.ToString().StartsWith("\"Microsoft\"") && logEvent.Level < Serilog.Events.LogEventLevel.Warning);
             });
 }

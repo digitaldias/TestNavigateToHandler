@@ -20,7 +20,7 @@ public class Result
 
 public class Result<TValue> : Result
 {
-    private TValue? _value;
+    private readonly TValue? _value;
 
     public Result(Problem problem)
         : base(problem)

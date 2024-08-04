@@ -13,7 +13,7 @@ public partial class CreateBoatHandler(ILogger<CreateBoatHandler> logger, IMedia
         var boat = new Boat(request.BoatName);
         LogBoatCreated(logger, request.MessageType, boat.Name, boat.Created);
 
-        var processResult = await _mediator.Send(new ProcessBoat(boat));
+        var processResult = await _mediator.Send(new ProcessBoat(boat), cancellationToken);
         if (processResult.IsFailure)
         {
             LogBoatNotProcessed(logger, request.MessageType, boat.Name);
