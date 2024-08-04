@@ -32,6 +32,7 @@ internal class Program
                     cfg.Namespace = "TestApp";
                 });
                 services.AddLamar();
+                services.AddHttpClient();
             })
             .ConfigureContainer<ServiceRegistry>(services =>
             {
@@ -45,14 +46,12 @@ internal class Program
             })
             .UseSerilog((hostContext, loggerConfiguration) =>
             {
-                // Switch to Debug() to see more information
-
                 loggerConfiguration
                     .MinimumLevel.Information()
                     .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Warning)
+                    .MinimumLevel.Override("AspNetCore", Serilog.Events.LogEventLevel.Warning)
+                    .MinimumLevel.Override("System.Net.Http.HttpClient", Serilog.Events.LogEventLevel.Warning)
                     .Enrich.FromLogContext()
-                    .WriteTo.Async(cfg => cfg.Console(theme: AnsiConsoleTheme.Code, applyThemeToRedirectedOutput: true))
-                    .Enrich.FromLogContext()
-                    .Filter.ByExcluding(logEvent => logEvent.Properties.TryGetValue("SourceContext", out var source) && source.ToString().StartsWith("\"Microsoft\"") && logEvent.Level < Serilog.Events.LogEventLevel.Warning);
+                    .WriteTo.Async(cfg => cfg.Console(theme: AnsiConsoleTheme.Code, applyThemeToRedirectedOutput: true));
             });
 }
