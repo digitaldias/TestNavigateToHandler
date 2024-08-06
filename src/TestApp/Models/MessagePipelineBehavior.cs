@@ -51,10 +51,10 @@ public partial class MessagePipelineBehavior<TRequest, TResult>(ILogger<MessageP
         } while (Interlocked.CompareExchange(ref AverageExecutionTime, newAverage, currentAverage) != currentAverage);
     }
 
-    [LoggerMessage(1, LogLevel.Debug, "Received {MessageType}:{MessageId}", SkipEnabledCheck = false)]
+    [LoggerMessage(1, LogLevel.Information, "Received {MessageType}:{MessageId}", SkipEnabledCheck = false)]
     private static partial void LogMessageInvocation(ILogger logger, string messageType, Guid messageId);
 
-    [LoggerMessage(2, LogLevel.Debug, "{MessageType}:{MessageId} complete in {ExecutionTime}ms", SkipEnabledCheck = false)]
+    [LoggerMessage(2, LogLevel.Information, "{MessageType}:{MessageId} complete in {ExecutionTime}ms", SkipEnabledCheck = false)]
     private static partial void LogMessageCompleted(ILogger logger, string messageType, double executionTime, Guid messageId);
 }
 

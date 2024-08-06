@@ -20,9 +20,9 @@ public sealed class TestAppRunner(IMediator mediator, ILogger<TestAppRunner> log
         var commands = new List<Models.ICommand>();
 
         commands.AddRange(Builder<CreateBoat>.CreateListOfSize(550).All().WithFactory(() => new CreateBoat(Faker.Address.City())).Build());
-        commands.AddRange(Builder<CreateCustomer>.CreateListOfSize(450).All().WithFactory(() => new CreateCustomer(Faker.Name.Last())).Build());
-        commands.AddRange(Builder<InventBoat>.CreateListOfSize(1000).All().WithFactory(() => new InventBoat(Faker.Name.First())).Build());
-        commands.AddRange(Builder<CreateOrder>.CreateListOfSize(150).All().WithFactory(() => new CreateOrder(Guid.NewGuid(), Guid.NewGuid())).Build());
+        commands.AddRange(Builder<CreateCustomer>.CreateListOfSize(850).All().WithFactory(() => new CreateCustomer(Faker.Name.Last())).Build());
+        // commands.AddRange(Builder<InventBoat>.CreateListOfSize(1000).All().WithFactory(() => new InventBoat(Faker.Name.First())).Build());
+        commands.AddRange(Builder<CreateOrder>.CreateListOfSize(350).All().WithFactory(() => new CreateOrder(Guid.NewGuid(), Guid.NewGuid())).Build());
 
         Shuffle(commands);
         var tasks = commands.Select(SendMessageAsync).ToList();
