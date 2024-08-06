@@ -21,11 +21,11 @@ public sealed class TestAppRunner(IMediator mediator, ILogger<TestAppRunner> log
 
         commands.AddRange(Builder<CreateBoat>.CreateListOfSize(550).All().WithFactory(() => new CreateBoat(Faker.Address.City())).Build());
         commands.AddRange(Builder<CreateCustomer>.CreateListOfSize(850).All().WithFactory(() => new CreateCustomer(Faker.Name.Last())).Build());
-        // commands.AddRange(Builder<InventBoat>.CreateListOfSize(1000).All().WithFactory(() => new InventBoat(Faker.Name.First())).Build());
+        commands.AddRange(Builder<InventBoat>.CreateListOfSize(1000).All().WithFactory(() => new InventBoat(Faker.Name.First())).Build());
         commands.AddRange(Builder<CreateOrder>.CreateListOfSize(350).All().WithFactory(() => new CreateOrder(Guid.NewGuid(), Guid.NewGuid())).Build());
 
         Shuffle(commands);
-        var tasks = commands.Select(SendMessageAsync).ToList();
+        var tasks = commands.ConvertAll(SendMessageAsync);
 
         try
         {
@@ -39,7 +39,7 @@ public sealed class TestAppRunner(IMediator mediator, ILogger<TestAppRunner> log
                     CommandType = group.Key,
                     InvocationCount = group.Count(),
                     AverageExecutionTime = group.Average(result => result.Value.time),
-                    PercentageFailed = ((double)group.Count(result => result.Value.succeeded == false) / group.Count()) * 100
+                    PercentageFailed = ((double)group.Count(result => !result.Value.succeeded) / group.Count()) * 100
                 });
 
             _logger.LogInformation("{Divider}", new string('-', 80));
@@ -55,7 +55,7 @@ public sealed class TestAppRunner(IMediator mediator, ILogger<TestAppRunner> log
 
             _logger.LogInformation("{Divider}", new string('-', 80));
 
-            _logger.LogInformation("Average execution time overall: {AverageExecutionTime:0.000}ms", MessagePipelineBehavior.AverageExecutionTime);
+            _logger.LogInformation("Average execution time overall: {AverageExecutionTime:0.000}ms", MessagePipelineBehaviorBase.AverageExecutionTime);
         }
         catch (Exception ex)
         {

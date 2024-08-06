@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 namespace TestApp.Models;
 
 public partial class MessagePipelineBehavior<TRequest, TResult>(ILogger<MessagePipelineBehavior<TRequest, TResult>> logger)
-    : MessagePipelineBehavior, IPipelineBehavior<TRequest, TResult>
+    : MessagePipelineBehaviorBase, IPipelineBehavior<TRequest, TResult>
     where TRequest : Command<TResult>
 {
     private static long _totalExecutions = 0;
@@ -29,9 +29,8 @@ public partial class MessagePipelineBehavior<TRequest, TResult>(ILogger<MessageP
     protected void Complete(ICommand message)
     {
         var elapsedTicks = Stopwatch.GetTimestamp() - message.Started;
-        var elapsedMs = (elapsedTicks * 1000.0) / Stopwatch.Frequency;
+        var elapsedMs = elapsedTicks * 1000 / (double)Stopwatch.Frequency;
 
-        message.CompletionTime = elapsedMs;
         UpdateAverageExecutionTime(elapsedMs);
 
         LogMessageCompleted(_logger, message.MessageType, elapsedMs, message.Id);
@@ -56,9 +55,4 @@ public partial class MessagePipelineBehavior<TRequest, TResult>(ILogger<MessageP
 
     [LoggerMessage(2, LogLevel.Information, "{MessageType}:{MessageId} complete in {ExecutionTime}ms", SkipEnabledCheck = false)]
     private static partial void LogMessageCompleted(ILogger logger, string messageType, double executionTime, Guid messageId);
-}
-
-public class MessagePipelineBehavior
-{
-    public static double AverageExecutionTime = 0;
 }

@@ -9,7 +9,9 @@ using Serilog.Sinks.SystemConsole.Themes;
 using TestApp.Models;
 using TestApp.Services;
 
-internal class Program
+namespace TestApp;
+
+internal static class Program
 {
     private static async Task Main(string[] args)
     {
@@ -24,7 +26,7 @@ internal class Program
     public static IHostBuilder CreateHostBuilder(string[] args) =>
         Host.CreateDefaultBuilder(args)
             .UseLamar()
-            .ConfigureServices((hostContext, services) =>
+            .ConfigureServices((_, services) =>
             {
                 services.AddMediator(cfg =>
                 {
@@ -44,7 +46,7 @@ internal class Program
                 });
                 services.Use<TestAppRunner>().Transient();
             })
-            .UseSerilog((hostContext, loggerConfiguration) =>
+            .UseSerilog((_, loggerConfiguration) =>
             {
                 loggerConfiguration
                     .MinimumLevel.Information()

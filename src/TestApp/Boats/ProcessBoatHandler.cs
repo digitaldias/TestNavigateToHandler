@@ -20,6 +20,8 @@ public sealed partial class ProcessBoatHandler(ILogger<ProcessBoatHandler> logge
         }
 
         var boatJson = JsonSerializer.Serialize(request.TheBoat);
+
+        // Test it at https://testnavigatetohandler.requestcatcher.com
         var httpRequest = new HttpRequestMessage(HttpMethod.Post, "https://testnavigatetohandler.requestcatcher.com/test");
         httpRequest.Headers.Add("Command", request.MessageType);
         httpRequest.Headers.Add("BoatId", request.TheBoat.Id.ToString());

@@ -16,5 +16,4 @@ public sealed partial class InventBoatHandler(ILogger<InventBoatHandler> logger)
 
     [LoggerMessage(1, LogLevel.Information, "Boat {BoatName} was reimagined on {Created}", SkipEnabledCheck = true)]
     private static partial void LogBoatInvented(ILogger logger, string boatName, DateTime created);
-
 }
