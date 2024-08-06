@@ -19,10 +19,10 @@ public sealed class TestAppRunner(IMediator mediator, ILogger<TestAppRunner> log
     {
         var commands = new List<Models.ICommand>();
 
-        commands.AddRange(Builder<CreateBoat>.CreateListOfSize(550).All().WithFactory(() => new CreateBoat(Faker.Address.City())).Build());
-        commands.AddRange(Builder<CreateCustomer>.CreateListOfSize(850).All().WithFactory(() => new CreateCustomer(Faker.Name.Last())).Build());
-        commands.AddRange(Builder<InventBoat>.CreateListOfSize(1000).All().WithFactory(() => new InventBoat(Faker.Name.First())).Build());
-        commands.AddRange(Builder<CreateOrder>.CreateListOfSize(350).All().WithFactory(() => new CreateOrder(Guid.NewGuid(), Guid.NewGuid())).Build());
+        commands.AddRange(Builder<CreateBoat>.CreateListOfSize(50).All().WithFactory(() => new CreateBoat(Faker.Address.City())).Build());
+        commands.AddRange(Builder<CreateCustomer>.CreateListOfSize(85).All().WithFactory(() => new CreateCustomer(Faker.Name.Last())).Build());
+        commands.AddRange(Builder<InventBoat>.CreateListOfSize(100).All().WithFactory(() => new InventBoat(Faker.Name.First())).Build());
+        commands.AddRange(Builder<CreateOrder>.CreateListOfSize(50).All().WithFactory(() => new CreateOrder(Guid.NewGuid(), Guid.NewGuid())).Build());
 
         Shuffle(commands);
         var tasks = commands.ConvertAll(SendMessageAsync);
@@ -46,7 +46,7 @@ public sealed class TestAppRunner(IMediator mediator, ILogger<TestAppRunner> log
 
             foreach (var avg in averageExecutionTimes)
             {
-                _logger.LogInformation("{CommandType} executed {InvocationCount} times with avg: {AverageExecutionTime:0.000}ms. Percentage failed: {PercentageFailed:0.00}%",
+                _logger.LogInformation("{CommandType} executed {InvocationCount} times with avg: {AverageExecutionTime:0.00}ms. Percentage failed: {PercentageFailed:0.00}%",
                     avg.CommandType,
                     avg.InvocationCount,
                     avg.AverageExecutionTime,
@@ -55,7 +55,7 @@ public sealed class TestAppRunner(IMediator mediator, ILogger<TestAppRunner> log
 
             _logger.LogInformation("{Divider}", new string('-', 80));
 
-            _logger.LogInformation("Average execution time overall: {AverageExecutionTime:0.000}ms", MessagePipelineBehaviorBase.AverageExecutionTime);
+            _logger.LogInformation("Average execution time overall: {AverageExecutionTime:0.00}ms", MessagePipelineBehaviorBase.AverageExecutionTime);
         }
         catch (Exception ex)
         {

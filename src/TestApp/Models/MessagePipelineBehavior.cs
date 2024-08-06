@@ -11,12 +11,12 @@ public partial class MessagePipelineBehavior<TRequest, TResult>(ILogger<MessageP
     private static long _totalExecutions = 0;
     private readonly ILogger<MessagePipelineBehavior<TRequest, TResult>> _logger = logger;
 
-    public ValueTask<TResult> Handle(TRequest message, CancellationToken cancellationToken, MessageHandlerDelegate<TRequest, TResult> next)
+    public async ValueTask<TResult> Handle(TRequest message, CancellationToken cancellationToken, MessageHandlerDelegate<TRequest, TResult> next)
     {
         message.Started = Stopwatch.GetTimestamp();
         Begin(message);
 
-        var result = next(message, cancellationToken);
+        var result = await next(message, cancellationToken);
 
         Complete(message);
 
@@ -29,7 +29,7 @@ public partial class MessagePipelineBehavior<TRequest, TResult>(ILogger<MessageP
     protected void Complete(ICommand message)
     {
         var elapsedTicks = Stopwatch.GetTimestamp() - message.Started;
-        var elapsedMs = elapsedTicks * 1000 / (double)Stopwatch.Frequency;
+        var elapsedMs = (elapsedTicks / (double)Stopwatch.Frequency) * 1000.0;
 
         UpdateAverageExecutionTime(elapsedMs);
 
@@ -53,6 +53,6 @@ public partial class MessagePipelineBehavior<TRequest, TResult>(ILogger<MessageP
     [LoggerMessage(1, LogLevel.Information, "Received {MessageType}:{MessageId}", SkipEnabledCheck = false)]
     private static partial void LogMessageInvocation(ILogger logger, string messageType, Guid messageId);
 
-    [LoggerMessage(2, LogLevel.Information, "{MessageType}:{MessageId} complete in {ExecutionTime}ms", SkipEnabledCheck = false)]
+    [LoggerMessage(2, LogLevel.Information, "{MessageType}:{MessageId} complete in {ExecutionTime:0.00}ms", SkipEnabledCheck = false)]
     private static partial void LogMessageCompleted(ILogger logger, string messageType, double executionTime, Guid messageId);
 }
