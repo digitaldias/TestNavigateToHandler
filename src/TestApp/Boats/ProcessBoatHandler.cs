@@ -26,14 +26,23 @@ public sealed partial class ProcessBoatHandler(ILogger<ProcessBoatHandler> logge
         httpRequest.Headers.Add("Command", request.MessageType);
         httpRequest.Headers.Add("BoatId", request.TheBoat.Id.ToString());
         httpRequest.Content = new StringContent(boatJson, Encoding.UTF8, "application/json");
-        var response = await _httpClient.SendAsync(httpRequest, cancellationToken);
-        if (response.IsSuccessStatusCode)
+
+        try
         {
-            return new Result<bool>(true);
+            var response = await _httpClient.SendAsync(httpRequest, cancellationToken);
+            if (response.IsSuccessStatusCode)
+            {
+                return new Result<bool>(true);
+            }
+            else
+            {
+                var problem = new Problem("Failed to send the boat");
+                return new Result<bool>(problem);
+            }
         }
-        else
+        catch (Exception ex)
         {
-            var problem = new Problem("Failed to send the boat");
+            var problem = new Problem("Failed to send the boat: " + ex.Message);
             return new Result<bool>(problem);
         }
     }

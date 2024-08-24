@@ -14,7 +14,7 @@ public class SetSurnameHandler : IRequestHandler<SetSurname, string>
             Created = DateTime.UtcNow
         };
         var writer = new DiskWriter();
-        await writer.Write(SomeOddity, Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), cancellationToken);
+        await DiskWriter.Write(SomeOddity, cancellationToken);
         return request.Surname;
     }
 }

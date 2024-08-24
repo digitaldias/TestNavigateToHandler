@@ -21,7 +21,6 @@ public sealed class TestAppRunner(IMediator mediator, ILogger<TestAppRunner> log
 
         commands.AddRange(Builder<CreateBoat>.CreateListOfSize(50).All().WithFactory(() => new CreateBoat(Faker.Address.City())).Build());
         commands.AddRange(Builder<CreateCustomer>.CreateListOfSize(85).All().WithFactory(() => new CreateCustomer(Faker.Name.Last())).Build());
-        commands.AddRange(Builder<InventBoat>.CreateListOfSize(100).All().WithFactory(() => new InventBoat(Faker.Name.First())).Build());
         commands.AddRange(Builder<CreateOrder>.CreateListOfSize(50).All().WithFactory(() => new CreateOrder(Guid.NewGuid(), Guid.NewGuid())).Build());
 
         Shuffle(commands);
